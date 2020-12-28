@@ -18,10 +18,10 @@ def _crypto_char(char, key, operation_type):
     char_index = alphabet.index(char)
     key_index = alphabet.index(key)
 
-    if operation_type == 'decrypt':
+    if operation_type == 'encrypt':
         new_char_index = (char_index + key_index) % 26
 
-    elif operation_type == 'encrypt':
+    elif operation_type == 'decrypt':
         new_char_index = (char_index - key_index) % 26
 
     else:
@@ -31,7 +31,7 @@ def _crypto_char(char, key, operation_type):
     return new_char
 
 
-def match_keyword(input_len, keyword):
+def correct_keyword(input_len, keyword):
     keyword_len = len(keyword)
 
     if input_len > keyword_len:
@@ -45,25 +45,20 @@ def match_keyword(input_len, keyword):
     return keyword
 
 
+def cycle(text, keyword, operation_type):
+    new_text_array = list()
+    keyword = correct_keyword(len(text), keyword)
+
+    for original_char, keyword_char in zip(text, keyword):
+        new_char = _crypto_char(original_char, keyword_char, operation_type)
+        new_text_array.append(new_char)
+
+    return ''.join(new_text_array)
+
+
 def encrypt_vigenere(plaintext: str, keyword: str) -> str:
-    ciphertext = list()
-
-    keyword = match_keyword(len(plaintext), keyword)
-
-    for original_char, keyword_char in zip(plaintext, keyword):
-        new_char = _crypto_char(original_char, keyword_char, 'decrypt')
-        ciphertext.append(new_char)
-
-    return "".join(ciphertext)
+    return cycle(plaintext, keyword=keyword, operation_type='encrypt')
 
 
 def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
-    plaintext = list()
-
-    keyword = match_keyword(len(ciphertext), keyword)
-
-    for original_char, keyword_char in zip(ciphertext, keyword):
-        new_char = _crypto_char(original_char, keyword_char, 'encrypt')
-        plaintext.append(new_char)
-
-    return "".join(plaintext)
+    return cycle(ciphertext, keyword=keyword, operation_type='decrypt')
